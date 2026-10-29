@@ -1,1 +1,22 @@
-[{"id": "safety_hooks", "why": "Pre-execution command inspection blocks destructive and exfiltration attempts before they reach the guest, providing defense in depth beyond prompts.", "evidence_path": "app/security.py"}, {"id": "network_policy", "why": "Restricting guest egress prevents unauthorized data exfiltration during containment tests, proving isolation from the host network.", "evidence_path": "app/sandbox/provider.py"}]
+[
+  {
+    "id": "safety_hooks",
+    "why": "Pre-execution command inspection blocks destructive and exfiltration attempts before they reach the guest, providing defense in depth beyond prompts.",
+    "evidence_path": "app/security.py"
+  },
+  {
+    "id": "network_policy",
+    "why": "Restricting guest egress prevents unauthorized data exfiltration during containment tests, proving isolation from the host network.",
+    "evidence_path": "app/sandbox/provider.py"
+  },
+  {
+    "id": "command_callbacks",
+    "why": "Attaches native Celesto Callback hooks (on_pre_run, on_post_run, on_run_error) to intercept and log in-flight agent commands deterministically before they execute on the guest.",
+    "evidence_path": "app/security.py"
+  },
+  {
+    "id": "sandbox_snapshots",
+    "why": "Provides point-in-time full guest microVM snapshotting and instant restoration to checkpoint state before risky agent operations and eliminate cold-start overhead.",
+    "evidence_path": "app/sandbox/provider.py"
+  }
+]

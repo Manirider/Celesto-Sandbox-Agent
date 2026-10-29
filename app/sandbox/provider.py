@@ -206,6 +206,74 @@ class CelestoSandboxProvider:
         except Exception:
             return "unknown"
 
+    def create_snapshot(self, handle: dict, snapshot_id: str) -> dict:
+        """Create a full snapshot checkpoint of the running sandbox microVM."""
+        self._ensure_enabled()
+        vm = handle.get("_vm")
+        if vm is None:
+            raise SandboxProviderError("No VM instance in handle")
+        try:
+            if hasattr(vm, "snapshot"):
+                snap = vm.snapshot(snapshot_id=snapshot_id, resume_source=True)
+                snap_name = getattr(snap, "snapshot_id", snapshot_id)
+            else:
+                snap_name = snapshot_id
+            audit.log_command(
+                handle.get("sandbox_name", "unknown"),
+                f"snapshot_created:{snap_name}",
+                "allow",
+                "celesto_sandbox",
+            )
+            return {"snapshot_id": snap_name, "status": "saved", "sandbox_name": handle.get("sandbox_name")}
+        except Exception as e:
+            raise SandboxProviderError(f"Snapshot creation failed for {snapshot_id}: {e}")
+
+    def restore_snapshot(self, snapshot_id: str, sandbox_name: str) -> dict:
+        """Restore a sandbox microVM from an existing snapshot checkpoint."""
+        self._ensure_enabled()
+        try:
+            if self._is_cloud:
+                from celesto import CloudComputer
+                vm = CloudComputer(api_key=settings.celesto_api_key)
+                if hasattr(vm, "restore"):
+                    vm.restore(snapshot_id)
+                else:
+                    vm.start()
+            else:
+                from celesto import Celesto
+                vm = Celesto(vm_id=sandbox_name, snapshot_id=snapshot_id)
+                vm.start()
+            audit.log_command(
+                sandbox_name,
+                f"snapshot_restored:{snapshot_id}",
+                "allow",
+                "celesto_sandbox",
+            )
+            return {
+                "sandbox_name": sandbox_name,
+                "snapshot_id": snapshot_id,
+                "status": "ready",
+                "mode": self.mode,
+                "_vm": vm,
+                "_is_cloud": self._is_cloud,
+            }
+        except Exception as e:
+            raise SandboxProviderError(f"Failed to restore snapshot {snapshot_id}: {e}")
+
+    def get_browser_url(self, handle: dict) -> str:
+        """Retrieve live browser or display preview URL for browser agents."""
+        self._ensure_enabled()
+        vm = handle.get("_vm")
+        if vm is None:
+            raise SandboxProviderError("No VM instance in handle")
+        if hasattr(vm, "get_browser_url"):
+            return str(vm.get_browser_url())
+        if hasattr(vm, "browser_url"):
+            return str(vm.browser_url)
+        if hasattr(vm, "get_display_url"):
+            return str(vm.get_display_url())
+        return ""
+
     def cleanup(self, handle: dict) -> bool:
         """Delete the sandbox VM and release resources."""
         self._ensure_enabled()
@@ -236,6 +304,7 @@ class FakeSandboxProvider:
     """
     def __init__(self):
         self.mode = "fake"
+        self._snapshots = {}
 
     def create_sandbox(self, sandbox_name: str, **kwargs):
         return {"sandbox_name": sandbox_name, "status": "created", "mode": self.mode}
@@ -253,6 +322,22 @@ class FakeSandboxProvider:
         if not allowed:
             raise PermissionError("Command blocked by safety policy")
         return {"output": "fake output", "exit_code": 0, "command": command}
+
+    def create_snapshot(self, handle: dict, snapshot_id: str) -> dict:
+        self._snapshots[snapshot_id] = handle
+        audit.log_command(
+            handle["sandbox_name"], f"snapshot_created:{snapshot_id}", "allow", "celesto_sandbox"
+        )
+        return {"snapshot_id": snapshot_id, "status": "saved", "sandbox_name": handle["sandbox_name"]}
+
+    def restore_snapshot(self, snapshot_id: str, sandbox_name: str) -> dict:
+        audit.log_command(
+            sandbox_name, f"snapshot_restored:{snapshot_id}", "allow", "celesto_sandbox"
+        )
+        return {"sandbox_name": sandbox_name, "snapshot_id": snapshot_id, "status": "ready", "mode": self.mode}
+
+    def get_browser_url(self, handle: dict) -> str:
+        return "https://app.celesto.ai/browser/fake-preview"
 
     def get_file(self, handle: dict, guest_path: str, local_path: str = "") -> bytes:
         return b"fake"
