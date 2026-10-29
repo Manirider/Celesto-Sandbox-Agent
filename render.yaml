@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: celesto-sandbox-agent
+    runtime: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: celesto-db
+          property: connectionString
+      - key: CELESTO_PROVIDER
+        value: celesto_cloud
+      - key: CELESTO_API_KEY
+        sync: false
+      - key: CELESTO_BACKEND
+        value: falix
+      - key: API_PORT
+        value: 8080
+      - key: SANDBOX_TIMEOUT_S
+        value: 600
+
+databases:
+  - name: celesto-db
+    plan: free
+    region: oregon
