@@ -1,0 +1,10 @@
+{
+  "jobs": [
+    {"sandbox_name": "sbx-conc0001", "started_at": "2026-10-24T00:00:00Z", "status": "planned"},
+    {"sandbox_name": "sbx-conc0002", "started_at": "2026-10-24T00:00:01Z", "status": "planned"},
+    {"sandbox_name": "sbx-conc0003", "started_at": "2026-10-24T00:00:02Z", "status": "planned"},
+    {"sandbox_name": "sbx-conc0004", "started_at": "2026-10-24T00:00:03Z", "status": "planned"},
+    {"sandbox_name": "sbx-conc0005", "started_at": "2026-10-24T00:00:04Z", "status": "planned"}
+  ],
+  "breakage_notes": "Docker daemon is active and PostgreSQL 16 is healthy. CELESTO_API_KEY is configured and authenticated with api.celesto.ai, but concurrent guest sandbox provisioning is blocked by Celesto Cloud API returning HTTP 402 Payment Required (insufficient credits/payment plan)."
+}

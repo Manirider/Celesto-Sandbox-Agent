@@ -1,0 +1,1 @@
+{"cleanup_on_success": true, "cleanup_on_failure": true, "cleanup_on_interrupt": true, "sandbox_names": ["sbx-demo1234", "sbx-test5678"]}

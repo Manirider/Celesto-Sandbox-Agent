@@ -1,0 +1,43 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://celesto_user:celesto_pass@postgres:5432/celesto_db}
+      - CELESTO_PROVIDER=${CELESTO_PROVIDER:-celesto_cloud}
+      - CELESTO_API_KEY=${CELESTO_API_KEY:-}
+      - CELESTO_BACKEND=${CELESTO_BACKEND:-qemu}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-celesto_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-celesto_pass}
+      - POSTGRES_DB=${POSTGRES_DB:-celesto_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./seeds:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-celesto_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

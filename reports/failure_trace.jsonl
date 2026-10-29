@@ -1,0 +1,4 @@
+{"ts":"2026-10-24T00:00:00Z","event":"step_started","step":7,"sandbox_name":"sbx-demo1234"}
+{"ts":"2026-10-24T00:00:01Z","event":"failure_detected","step":7,"error":"Injected failure"}
+{"ts":"2026-10-24T00:00:02Z","event":"policy_applied","policy":"fresh"}
+{"event": "policy_applied", "policy": "fresh", "old_sandbox": "sbx-recov865818", "new_sandbox": "sbx-fresh865818", "ts": "2026-10-24T18:17:03.498235+00:00"}

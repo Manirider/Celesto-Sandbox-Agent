@@ -1,0 +1,12 @@
+{
+  "run_count": 0,
+  "runs": [],
+  "success_rate": 0.0,
+  "median_wall_clock_s": 0,
+  "p90_wall_clock_s": 0,
+  "median_boot_to_ready_s": 0,
+  "total_cost_usd": 0.0,
+  "postmortem_path": "reports/postmortem.md",
+  "status": "BLOCKED_PAYMENT_REQUIRED",
+  "blocker_detail": "Celesto Cloud API returns HTTP 402 (usage_subscription_required). API key is valid and authenticated, but account requires free $5 trial activation or prepaid credit via https://app.celesto.ai dashboard."
+}
